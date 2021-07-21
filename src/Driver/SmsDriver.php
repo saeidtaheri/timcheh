@@ -3,24 +3,12 @@
 namespace App\Driver;
 
 use App\Contract\NotificationDriverInterface;
-use Psr\Log\LoggerInterface;
 
 class SmsDriver implements NotificationDriverInterface
 {
-    protected $apikey;
-    protected $domain;
-    protected $logger;
+    const TYPE = 'Sms';
+
     protected $recipients = [];
-
-    public function __construct(string $apikey, string $domain, LoggerInterface $logger)
-    {
-        if(!$this->checkApi($apikey))
-            throw new \InvalidArgumentException("API key is Not Valid");
-
-        $this->apikey = $apikey;
-        $this->domain = $domain;
-        $this->logger = $logger;
-    }
 
     public function recipients(array $recipients) : NotificationDriverInterface
     {
@@ -33,9 +21,7 @@ class SmsDriver implements NotificationDriverInterface
     {
         foreach ($this->recipients as $recipient)
         {
-            $this->logger->notice(
-                sprintf("sending message '%s' to '%s' in: '%s'", $message, $recipient, $this->domain)
-            );
+            return "send message to {$recipient} with sms driver";
         }
 
         // send sms in queue in real world
@@ -43,8 +29,8 @@ class SmsDriver implements NotificationDriverInterface
         return true;
     }
 
-    private function checkApi($key): bool
+    public function isLoggable(string $type): bool
     {
-        return strlen($key) > 0;
+        return self::TYPE == $type;
     }
 }

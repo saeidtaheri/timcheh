@@ -6,17 +6,24 @@ use App\Contract\NotificationDriverInterface;
 
 class NotificationService
 {
-    protected $driver;
+    protected $drivers;
 
-    public function __construct(NotificationDriverInterface $driver)
+    public function addDriver(NotificationDriverInterface $driver)
     {
-        $this->driver = $driver;
+        $this->drivers[] = $driver;
     }
 
-    public function send(string $message, array $users) : bool
+    public function send(string $type, string $message, array $users) : bool
     {
-        return $this->driver
-            ->recipients($users)
-            ->send($message);
+        foreach ($this->drivers as $driver)
+        {
+            if ($driver->isLoggable($type)) {
+                 return $driver
+                     ->recipients($users)
+                     ->send($message);
+            }
+        }
+
+        throw new \InvalidArgumentException('Driver not found');
     }
 }

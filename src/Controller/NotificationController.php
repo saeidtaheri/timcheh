@@ -4,12 +4,13 @@ namespace App\Controller;
 
 use App\Service\NotificationService;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class NotificationController
+class NotificationController extends AbstractController
 {
     /**
      * @Route("/", name="send_notification_route", methods={"POST"})
@@ -17,9 +18,10 @@ class NotificationController
     public function index(NotificationService $notificationService, Request $request): Response
     {
         $message = $request->get('message');
+        $driver = $this->getParameter('driver');
         $users = ['saeid', 'ahmad'];
 
-        if (!$notificationService->send($message, $users)) {
+        if (!$notificationService->send($driver, $message, $users)) {
             return new JsonResponse([
                 'message' => 'unable to send messages.'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);

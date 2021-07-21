@@ -3,23 +3,12 @@
 namespace App\Driver;
 
 use App\Contract\NotificationDriverInterface;
-use Psr\Log\LoggerInterface;
 
 class EmailDriver implements NotificationDriverInterface
 {
-    protected $username;
-    protected $password;
-    protected $logger;
-    protected $domain;
-    protected $recipients = [];
+    const TYPE = 'Email';
 
-    public function __construct(string $username, string $password, string $domain, LoggerInterface $logger)
-    {
-        $this->username = $username;
-        $this->password = $password;
-        $this->domain = $domain;
-        $this->logger = $logger;
-    }
+    protected $recipients = [];
 
     public function recipients(array $recipients) : NotificationDriverInterface
     {
@@ -32,14 +21,17 @@ class EmailDriver implements NotificationDriverInterface
     {
         foreach ($this->recipients as $recipient)
         {
-            $this->logger->notice(
-                sprintf("sending email '%s' to '%s' with '%s'", $message, $recipient, $this->domain)
-            );
+            return "send Email to {$recipient} with email driver";
 
             // Real World Example Should be Something Like This
             // Event->dispatch(SendNotificationEmail($recipient, $message))
         }
 
         return true;
+    }
+
+    public function isLoggable(string $type): bool
+    {
+        return self::TYPE == $type;
     }
 }

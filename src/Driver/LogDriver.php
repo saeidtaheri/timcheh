@@ -3,19 +3,12 @@
 namespace App\Driver;
 
 use App\Contract\NotificationDriverInterface;
-use Psr\Log\LoggerInterface;
 
 class LogDriver implements NotificationDriverInterface
 {
-    protected $logger;
-    protected $storage;
-    protected $recipients = [];
+    const TYPE = 'Log';
 
-    public function __construct(string $storage, LoggerInterface $logger)
-    {
-        $this->logger= $logger;
-        $this->storage = $storage;
-    }
+    protected $recipients = [];
 
     public function recipients(array $recipients) : NotificationDriverInterface
     {
@@ -28,11 +21,14 @@ class LogDriver implements NotificationDriverInterface
     {
         foreach ($this->recipients as $recipient)
         {
-            $this->logger->notice(
-                sprintf("User: '%s' produces message: '%s' in: '%s'", $recipient, $message, $this->storage)
-            );
+            return "Log user {$recipient} with Log driver";
         }
 
         return true;
+    }
+
+    public function isLoggable(string $type): bool
+    {
+        return self::TYPE == $type;
     }
 }
