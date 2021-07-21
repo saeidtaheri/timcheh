@@ -4,7 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    driver: '%env(resolve:NOTIFICATION_DRIVER)%Driver'
+    driver: '%env(resolve:NOTIFICATION_DRIVER)%'
 
 services:
     # default configuration for services in *this* file
@@ -27,30 +27,9 @@ services:
         resource: '../src/Controller'
         tags: [ 'controller.service_arguments' ]
 
-    App\Driver\EmailDriver:
-        class: App\Driver\EmailDriver
-        arguments: ['%env(resolve:EMAIL_USERNAME)%', '%env(resolve:EMAIL_PASSWORD)%', '%env(resolve:EMAIL_DOMAIN)%']
-        tags: ['notification.driver']
-
-    App\Driver\SmsDriver:
-        class: App\Driver\SmsDriver
-        arguments: ['%env(resolve:SMS_APIKEY)%', '%env(resolve:SMS_DOMAIN)%']
-        tags: ['notification.driver']
-
-    App\Driver\LogDriver:
-        class: App\Driver\LogDriver
-        arguments: [ '%env(resolve:LOG_STORAGE)%' ]
-        tags: ['notification.driver']
-
-
-#    _instanceof:
-#        App\Driver\NotificationDriverInterface:
-#            tags: ['app.notification_tag']
-
-#    App\Service\NotificationService:
-#        class: App\Service\NotificationService
-#        arguments: ['@App\Driver\EmailDriver']
-
+    _instanceof:
+        App\Contract\NotificationDriverInterface:
+            tags: ['app.notification_driver']
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

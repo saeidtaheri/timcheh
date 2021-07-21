@@ -2,17 +2,17 @@
 
 namespace App;
 
+use App\DependencyInjection\Compiler\NotificationCompilerPass;
 use App\Service\NotificationService;
 use SebastianBergmann\Diff\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
-class Kernel extends BaseKernel implements CompilerPassInterface
+class Kernel extends BaseKernel
 {
     use MicroKernelTrait;
 
@@ -51,5 +51,10 @@ class Kernel extends BaseKernel implements CompilerPassInterface
             throw new InvalidArgumentException('Invalid Notification Driver!');
 
         $notificationDefinition->addArgument(new Reference($driver));
+    }
+
+    protected function build(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new NotificationCompilerPass());
     }
 }
